@@ -1,7 +1,8 @@
+"use client";
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db, type WorkoutPlan } from '../db';
+import { db, type WorkoutPlan } from '../../db';
 import {
   Container,
   Typography,
@@ -31,31 +32,26 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-// Define the shape of an exercise within a plan day for the UI state
 interface PlanExercise {
   exerciseId: number;
-  name: string; // To display in the UI without another DB query
+  name: string;
   sets: number;
   reps: string;
   rest: number;
 }
 
-// Define the shape of a workout day for the UI state
 interface PlanDay {
   day: number;
   exercises: PlanExercise[];
 }
 
 const CreatePlan: React.FC = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const allExercises = useLiveQuery(() => db.exercises.toArray());
 
-  // Form state
   const [planName, setPlanName] = useState('');
   const [planDescription, setPlanDescription] = useState('');
   const [days, setDays] = useState<PlanDay[]>([]);
-
-  // Dialog state
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedExercises, setSelectedExercises] = useState<number[]>([]);
   const [currentDayIndex, setCurrentDayIndex] = useState<number | null>(null);
@@ -70,7 +66,7 @@ const CreatePlan: React.FC = () => {
 
   const openExerciseDialog = (dayIndex: number) => {
     setCurrentDayIndex(dayIndex);
-    setSelectedExercises([]); // Reset selection
+    setSelectedExercises([]);
     setIsDialogOpen(true);
   };
 
@@ -90,7 +86,7 @@ const CreatePlan: React.FC = () => {
         return {
             exerciseId: id,
             name: exerciseDetails?.name || 'Unknown Exercise',
-            sets: 3, // Default values
+            sets: 3,
             reps: '8-12',
             rest: 60,
         }
@@ -139,7 +135,7 @@ const CreatePlan: React.FC = () => {
 
     try {
       await db.workoutPlans.add(planToSave);
-      navigate('/plans');
+      router.push('/plans');
     } catch (error) {
       console.error("Failed to save plan:", error);
       alert("Failed to save plan.");
@@ -150,7 +146,7 @@ const CreatePlan: React.FC = () => {
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       <AppBar position="sticky">
         <Toolbar>
-          <IconButton edge="start" color="inherit" onClick={() => navigate(-1)} aria-label="back">
+          <IconButton edge="start" color="inherit" onClick={() => router.back()} aria-label="back">
             <ArrowBackIcon />
           </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
@@ -222,7 +218,6 @@ const CreatePlan: React.FC = () => {
         </Button>
       </Container>
 
-      {/* Exercise Picker Dialog */}
       <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} fullWidth maxWidth="xs">
         <DialogTitle>Select Exercises</DialogTitle>
         <DialogContent>

@@ -1,11 +1,12 @@
+"use client";
 import React, { useState, useEffect, useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useRouter } from 'next/navigation';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db } from '../db';
+import { db } from '../../../db';
 import { useSelector, useDispatch } from 'react-redux';
-import type { RootState } from '../store/store';
-import { setReminderSettings, removeActiveReminder, clearActiveReminders } from '../store/slices/reminderSlice';
-import { reminderService } from '../services/ReminderService';
+import type { RootState } from '../../../store/store';
+import { setReminderSettings, removeActiveReminder, clearActiveReminders } from '../../../store/slices/reminderSlice';
+import { reminderService } from '../../../services/ReminderService';
 import {
   Box,
   AppBar,
@@ -38,9 +39,12 @@ interface CompletedSet {
 }
 
 const ActiveWorkout: React.FC = () => {
-  const { planId } = useParams();
-  const navigate = useNavigate();
+  const params = useParams();
+  const router = useRouter();
+  const planId = params.planId;
+
   const dispatch = useDispatch();
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
 
   const plan = useLiveQuery(() => db.workoutPlans.get(Number(planId)), [planId]);
   const exercises = useLiveQuery(() => db.exercises.toArray(), []);
@@ -53,7 +57,12 @@ const ActiveWorkout: React.FC = () => {
   const [sessionStartTime, setSessionStartTime] = useState<Date | null>(null);
   const [restTimer, setRestTimer] = useState<number | null>(null);
 
-  // Load reminder settings into Redux store
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push('/login');
+    }
+  }, [isAuthenticated, router]);
+
   useEffect(() => {
     if (reminderSettings) {
       dispatch(setReminderSettings(reminderSettings));
@@ -73,14 +82,12 @@ const ActiveWorkout: React.FC = () => {
       setSessionSets(initialSets);
 
       return () => {
-        // Cleanup on component unmount
         reminderService.stopHydrationTimer();
         dispatch(clearActiveReminders());
       };
     }
   }, [plan, reminderSettings, dispatch]);
 
-  // Rest Timer countdown effect
   useEffect(() => {
       if (restTimer === null) return;
       if (restTimer > 0) {
@@ -155,11 +162,15 @@ const ActiveWorkout: React.FC = () => {
         )
     };
     await db.sessions.add(sessionToSave);
-    navigate('/plans');
+    router.push('/plans');
   };
 
   const handleCloseReminder = (id: string) => {
       dispatch(removeActiveReminder(id));
+  }
+
+  if (!isAuthenticated) {
+      return null;
   }
 
   if (!plan || !exercises || sessionSets.length === 0 || !reminderSettings) {
@@ -179,7 +190,7 @@ const ActiveWorkout: React.FC = () => {
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh', bgcolor: 'background.default' }}>
       <AppBar position="sticky">
         <Toolbar>
-          <IconButton edge="start" color="inherit" onClick={() => navigate(-1)} aria-label="back">
+          <IconButton edge="start" color="inherit" onClick={() => router.back()} aria-label="back">
             <ArrowBackIcon />
           </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1, textAlign: 'center' }}>

@@ -1,6 +1,7 @@
+"use client";
 import React, { useState, useEffect } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db, type UserProfile, type UserSettings, type TrainingPreferences, type ReminderSettings } from '../db';
+import { db, type UserProfile, type UserSettings, type TrainingPreferences, type ReminderSettings } from '../../db';
 import {
   Container,
   Typography,

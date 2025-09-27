@@ -1,5 +1,6 @@
+"use client";
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import Link from 'next/link';
 import {
   Container,
   Typography,
@@ -11,7 +12,7 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db } from '../db';
+import { db } from '../../db';
 
 const Plans: React.FC = () => {
   const workoutPlans = useLiveQuery(() => db.workoutPlans.toArray());
@@ -25,8 +26,8 @@ const Plans: React.FC = () => {
             <Button
               variant="contained"
               startIcon={<AddIcon />}
-              component={RouterLink}
-              to="/create-plan"
+              component={Link}
+              href="/create-plan"
             >
                 New Plan
             </Button>
@@ -45,7 +46,7 @@ const Plans: React.FC = () => {
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button component={RouterLink} to={`/workout/${plan.id}`} size="small">
+                <Button component={Link} href={`/workout/${plan.id}`} size="small">
                   Start Workout
                 </Button>
               </CardActions>

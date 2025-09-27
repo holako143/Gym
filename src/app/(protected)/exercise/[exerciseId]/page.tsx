@@ -1,11 +1,14 @@
+"use client";
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'next/navigation';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db } from '../db';
-import { Container, Typography, Box, Paper, Chip, Stack } from '@mui/material';
+import { db } from '../../../db';
+import { Container, Typography, Box, Paper, Chip, Stack, CircularProgress } from '@mui/material';
 
 const ExerciseDetail: React.FC = () => {
-  const { exerciseId } = useParams();
+  const params = useParams();
+  const exerciseId = params.exerciseId;
+
   const exercise = useLiveQuery(
     () => db.exercises.get(Number(exerciseId)),
     [exerciseId]
@@ -13,7 +16,8 @@ const ExerciseDetail: React.FC = () => {
 
   if (!exercise) {
     return (
-      <Container>
+      <Container sx={{ textAlign: 'center', mt: 4 }}>
+        <CircularProgress />
         <Typography>Loading exercise details...</Typography>
       </Container>
     );

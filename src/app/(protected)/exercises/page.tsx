@@ -1,6 +1,7 @@
+"use client";
 import React, { useState, useMemo } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db } from '../db';
+import { db } from '../../db';
 import {
   Box,
   TextField,
@@ -28,7 +29,7 @@ import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { Link as RouterLink } from 'react-router-dom';
+import Link from 'next/link';
 
 const categories = ['All', 'Chest', 'Back', 'Legs', 'Shoulders', 'Arms'];
 
@@ -113,8 +114,8 @@ const Exercises: React.FC = () => {
         {filteredExercises?.map((exercise) => (
           <ListItem
             key={exercise.id}
-            component={RouterLink}
-            to={`/exercise/${exercise.id}`}
+            component={Link}
+            href={`/exercise/${exercise.id}`}
             secondaryAction={
               <IconButton edge="end" aria-label="details">
                 <ChevronRightIcon />

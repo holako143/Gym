@@ -1,19 +1,21 @@
+"use client";
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import { loginSuccess } from '../store/slices/authSlice';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { loginSuccess } from '../../store/slices/authSlice';
 import {
   Container,
   Box,
   Typography,
   TextField,
   Button,
-  Link,
+  Link as MuiLink,
 } from '@mui/material';
 
 const Login: React.FC = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -23,7 +25,7 @@ const Login: React.FC = () => {
     const mockUser = { id: '1', name: 'Test User', email: email };
     const mockToken = 'fake-jwt-token';
     dispatch(loginSuccess({ user: mockUser, token: mockToken }));
-    navigate('/'); // Redirect to the main app page
+    router.push('/'); // Redirect to the main app page
   };
 
   return (
@@ -72,9 +74,9 @@ const Login: React.FC = () => {
           >
             Sign In
           </Button>
-          <Link component={RouterLink} to="/signup" variant="body2">
+          <MuiLink component={Link} href="/signup" variant="body2">
             {"Don't have an account? Sign Up"}
-          </Link>
+          </MuiLink>
         </Box>
       </Box>
     </Container>

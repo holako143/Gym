@@ -1,5 +1,6 @@
+"use client";
 import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { usePathname, useRouter } from 'next/navigation';
 import { BottomNavigation, BottomNavigationAction, Paper } from '@mui/material';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
 import SearchIcon from '@mui/icons-material/Search';
@@ -16,19 +17,16 @@ const navItems = [
 ];
 
 const BottomNav: React.FC = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  // Find the current path to set the value for BottomNavigation
-  const currentValue = navItems.find(item => item.path === location.pathname)?.path || '/';
+  const pathname = usePathname();
+  const router = useRouter();
 
   const handleChange = (_event: React.SyntheticEvent, newValue: string) => {
-    navigate(newValue);
+    router.push(newValue);
   };
 
   return (
     <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 1100 }} elevation={3}>
-      <BottomNavigation value={currentValue} onChange={handleChange} showLabels>
+      <BottomNavigation value={pathname} onChange={handleChange} showLabels>
         {navItems.map((item) => (
           <BottomNavigationAction
             key={item.path}
