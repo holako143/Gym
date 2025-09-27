@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { loginSuccess } from '../../store/slices/authSlice';
+import { loginSuccess } from '@/store/slices/authSlice';
 import {
   Container,
   Box,

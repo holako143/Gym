@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db } from '../../db';
+import { db } from '@/db';
 
 const Plans: React.FC = () => {
   const workoutPlans = useLiveQuery(() => db.workoutPlans.toArray());

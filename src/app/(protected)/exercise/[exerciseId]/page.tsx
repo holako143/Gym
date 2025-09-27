@@ -2,7 +2,7 @@
 import React from 'react';
 import { useParams } from 'next/navigation';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db } from '../../../db';
+import { db } from '@/db';
 import { Container, Typography, Box, Paper, Chip, Stack, CircularProgress } from '@mui/material';
 
 const ExerciseDetail: React.FC = () => {

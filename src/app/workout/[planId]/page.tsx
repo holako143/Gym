@@ -2,11 +2,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db } from '../../../db';
+import { db } from '@/db';
 import { useSelector, useDispatch } from 'react-redux';
-import type { RootState } from '../../../store/store';
-import { setReminderSettings, removeActiveReminder, clearActiveReminders } from '../../../store/slices/reminderSlice';
-import { reminderService } from '../../../services/ReminderService';
+import type { RootState } from '@/store/store';
+import { setReminderSettings, removeActiveReminder, clearActiveReminders } from '@/store/slices/reminderSlice';
+import { reminderService } from '@/services/ReminderService';
 import {
   Box,
   AppBar,

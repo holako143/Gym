@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db, type WorkoutPlan } from '../../db';
+import { db, type WorkoutPlan } from '@/db';
 import {
   Container,
   Typography,
