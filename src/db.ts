@@ -2,7 +2,7 @@ import Dexie, { type Table } from 'dexie';
 
 // 1. User-related interfaces
 export interface UserProfile {
-  id?: number; // Should be 1 for the single user
+  id?: number;
   name: string;
   email: string;
   age?: number;
@@ -10,20 +10,33 @@ export interface UserProfile {
 }
 
 export interface UserSettings {
-  id?: number; // Should be 1
+  id?: number;
   units: 'metric' | 'imperial';
   language: string;
   theme: 'light' | 'dark';
 }
 
 export interface TrainingPreferences {
-    id?: number; // Should be 1
+    id?: number;
     primaryGoal: 'build_muscle' | 'increase_strength' | 'lose_fat';
     workoutFrequency: number; // days per week
 }
 
+// 2. Reminder interfaces
+export interface ReminderSettings {
+    id?: number; // Should be 1
+    hydration: {
+        enabled: boolean;
+        interval: number; // minutes
+    };
+    setTransition: {
+        enabled: boolean;
+        sound: boolean;
+        vibration: boolean;
+    };
+}
 
-// 2. Workout-related interfaces
+// 3. Workout-related interfaces
 export interface Exercise {
   id?: number;
   name: string;
@@ -44,8 +57,8 @@ export interface WorkoutPlan {
     exercises: {
       exerciseId: number;
       sets: number;
-      reps: string; // e.g., "8-12"
-      rest: number; // in seconds
+      reps: string;
+      rest: number;
     }[];
   }[];
 }
@@ -54,7 +67,7 @@ export interface WorkoutSession {
   id?: number;
   planId: number;
   date: Date;
-  duration: number; // in minutes
+  duration: number;
   completedExercises: {
     exerciseId: number;
     sets: {
@@ -65,7 +78,7 @@ export interface WorkoutSession {
   }[];
 }
 
-// 3. Analytics-related interfaces
+// 4. Analytics-related interfaces
 export interface ProgressRecord {
     id?: number;
     exerciseId: number;
@@ -74,52 +87,45 @@ export interface ProgressRecord {
     totalVolume: number;
 }
 
-// Initial data for seeding the database
+// Initial data
 const initialExercises: Omit<Exercise, 'id'>[] = [
-    { name: 'Bench Press', category: 'Chest', primaryMuscles: ['Pectoralis Major'], secondaryMuscles: ['Triceps', 'Deltoids'] },
-    { name: 'Pull-ups', category: 'Back', primaryMuscles: ['Latissimus Dorsi'], secondaryMuscles: ['Biceps', 'Trapezius'] },
-    { name: 'Squats', category: 'Legs', primaryMuscles: ['Quadriceps', 'Gluteus Maximus'], secondaryMuscles: ['Hamstrings', 'Calves'] },
-    { name: 'Overhead Press', category: 'Shoulders', primaryMuscles: ['Deltoids'], secondaryMuscles: ['Triceps'] },
-    { name: 'Bicep Curls', category: 'Arms', primaryMuscles: ['Biceps'] },
+    { name: 'Bench Press', category: 'Chest', primaryMuscles: ['Pectoralis Major'] },
+    { name: 'Pull-ups', category: 'Back', primaryMuscles: ['Latissimus Dorsi'] },
 ];
-
-const initialUserProfile: UserProfile = {
+const initialUserProfile: UserProfile = { id: 1, name: 'Alex', email: 'alex.fitness@example.com' };
+const initialUserSettings: UserSettings = { id: 1, units: 'imperial', language: 'English', theme: 'dark' };
+const initialTrainingPreferences: TrainingPreferences = { id: 1, primaryGoal: 'build_muscle', workoutFrequency: 4 };
+const initialReminderSettings: ReminderSettings = {
     id: 1,
-    name: 'Alex',
-    email: 'alex.fitness@example.com',
-    age: 28,
-    gender: 'male',
+    hydration: { enabled: true, interval: 20 },
+    setTransition: { enabled: true, sound: true, vibration: true },
 };
-
-const initialUserSettings: UserSettings = {
-    id: 1,
-    units: 'imperial',
-    language: 'English',
-    theme: 'dark',
-};
-
-const initialTrainingPreferences: TrainingPreferences = {
-    id: 1,
-    primaryGoal: 'build_muscle',
-    workoutFrequency: 4,
-};
-
 
 export class MySubClassedDexie extends Dexie {
   // Define tables
   userProfile!: Table<UserProfile>;
   userSettings!: Table<UserSettings>;
   trainingPreferences!: Table<TrainingPreferences>;
+  reminderSettings!: Table<ReminderSettings>;
   exercises!: Table<Exercise>;
   workoutPlans!: Table<WorkoutPlan>;
   sessions!: Table<WorkoutSession>;
   progress!: Table<ProgressRecord>;
 
-
   constructor() {
     super('gymTrackerDB');
+    this.version(3).stores({
+        userProfile: '++id, email',
+        userSettings: '++id',
+        trainingPreferences: '++id',
+        reminderSettings: '++id',
+        exercises: '++id, name, category, *primaryMuscles',
+        workoutPlans: '++id, name',
+        sessions: '++id, planId, date',
+        progress: '++id, exerciseId, date',
+    });
+    // ... other versions
     this.version(2).stores({
-        // New schema definition
         userProfile: '++id, email',
         userSettings: '++id',
         trainingPreferences: '++id',
@@ -128,7 +134,6 @@ export class MySubClassedDexie extends Dexie {
         sessions: '++id, planId, date',
         progress: '++id, exerciseId, date',
     });
-
     this.version(1).stores({
         exercises: '++id, name, category',
         workoutPlans: '++id, name',
@@ -139,19 +144,12 @@ export class MySubClassedDexie extends Dexie {
   }
 
   async populate() {
-    await db.transaction('rw', this.exercises, this.userProfile, this.userSettings, this.trainingPreferences, async () => {
-        if ((await this.exercises.count()) === 0) {
-            await this.exercises.bulkAdd(initialExercises);
-        }
-        if ((await this.userProfile.count()) === 0) {
-            await this.userProfile.add(initialUserProfile);
-        }
-        if ((await this.userSettings.count()) === 0) {
-            await this.userSettings.add(initialUserSettings);
-        }
-        if ((await this.trainingPreferences.count()) === 0) {
-            await this.trainingPreferences.add(initialTrainingPreferences);
-        }
+    await db.transaction('rw', this.tables, async () => {
+        if ((await this.exercises.count()) === 0) await this.exercises.bulkAdd(initialExercises);
+        if ((await this.userProfile.count()) === 0) await this.userProfile.add(initialUserProfile);
+        if ((await this.userSettings.count()) === 0) await this.userSettings.add(initialUserSettings);
+        if ((await this.trainingPreferences.count()) === 0) await this.trainingPreferences.add(initialTrainingPreferences);
+        if ((await this.reminderSettings.count()) === 0) await this.reminderSettings.add(initialReminderSettings);
     });
   }
 }
