@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import { getTheme } from './theme/theme';
-import { RootState } from './store/store';
+import type { RootState } from './store/store';
 
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';

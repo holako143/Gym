@@ -1,6 +1,6 @@
 import { store } from '../store/store';
 import { addActiveReminder, ReminderType } from '../store/slices/reminderSlice';
-import { ReminderSettings } from '../db';
+import type { ReminderSettings } from '../db';
 import { alertService } from './AlertService';
 
 class ReminderService {

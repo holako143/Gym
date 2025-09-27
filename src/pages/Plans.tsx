@@ -3,13 +3,11 @@ import { Link as RouterLink } from 'react-router-dom';
 import {
   Container,
   Typography,
-  Grid,
   Card,
   CardContent,
   CardActions,
   Button,
   Box,
-  IconButton
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -34,11 +32,11 @@ const Plans: React.FC = () => {
             </Button>
         </Box>
 
-      <Grid container spacing={3}>
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
         {workoutPlans?.map(plan => (
-          <Grid item xs={12} sm={6} md={4} key={plan.id}>
-            <Card>
-              <CardContent>
+          <Box key={plan.id} sx={{ width: { xs: '100%', sm: 'calc(50% - 12px)', md: 'calc(33.333% - 16px)' }, flexGrow: 1 }}>
+            <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+              <CardContent sx={{ flexGrow: 1 }}>
                 <Typography variant="h5" component="div">
                   {plan.name}
                 </Typography>
@@ -52,9 +50,9 @@ const Plans: React.FC = () => {
                 </Button>
               </CardActions>
             </Card>
-          </Grid>
+          </Box>
         ))}
-      </Grid>
+      </Box>
     </Container>
   );
 };

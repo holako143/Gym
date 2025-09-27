@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db, WorkoutSession } from '../db';
+import { db } from '../db';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../store/store';
-import { setReminderSettings, addActiveReminder, removeActiveReminder, clearActiveReminders, ActiveReminder, ReminderType } from '../store/slices/reminderSlice';
+import type { RootState } from '../store/store';
+import { setReminderSettings, removeActiveReminder, clearActiveReminders } from '../store/slices/reminderSlice';
 import { reminderService } from '../services/ReminderService';
 import {
   Box,
@@ -19,7 +19,6 @@ import {
   Paper,
   Button,
   Container,
-  Divider,
   CircularProgress,
   TextField,
   Stack,
@@ -29,7 +28,6 @@ import {
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import DoneIcon from '@mui/icons-material/Done';
 import TimerIcon from '@mui/icons-material/Timer';
 
@@ -52,7 +50,7 @@ const ActiveWorkout: React.FC = () => {
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [sessionSets, setSessionSets] = useState<CompletedSet[][]>([]);
-  const [startTime, setStartTime] = useState<Date | null>(null);
+  const [sessionStartTime, setSessionStartTime] = useState<Date | null>(null);
   const [restTimer, setRestTimer] = useState<number | null>(null);
 
   // Load reminder settings into Redux store
@@ -64,7 +62,7 @@ const ActiveWorkout: React.FC = () => {
 
   useEffect(() => {
     if (plan && reminderSettings) {
-      setStartTime(new Date());
+      setSessionStartTime(new Date());
       reminderService.startHydrationTimer(reminderSettings.hydration);
 
       const initialSets: CompletedSet[][] = plan.days.flatMap(day =>
@@ -120,7 +118,6 @@ const ActiveWorkout: React.FC = () => {
     newSessionSets[currentExerciseIndex][currentSetIndex].completed = true;
     setSessionSets(newSessionSets);
 
-    // Start rest timer
     if (currentPlanExercise && reminderSettings) {
         setRestTimer(currentPlanExercise.rest);
     }
@@ -144,7 +141,20 @@ const ActiveWorkout: React.FC = () => {
   };
 
   const handleSaveWorkout = async () => {
-    // ... save logic ...
+    if (!plan || !sessionStartTime) return;
+
+    const sessionToSave = {
+        planId: plan.id!,
+        date: new Date(),
+        duration: Math.round((new Date().getTime() - sessionStartTime.getTime()) / 60000),
+        completedExercises: plan.days.flatMap((day) =>
+            day.exercises.map((ex, exIdx) => ({
+                exerciseId: ex.exerciseId,
+                sets: sessionSets[exIdx] || [],
+            }))
+        )
+    };
+    await db.sessions.add(sessionToSave);
     navigate('/plans');
   };
 
@@ -185,7 +195,6 @@ const ActiveWorkout: React.FC = () => {
       </AppBar>
 
       <Container component="main" sx={{ flexGrow: 1, py: 2, overflowY: 'auto' }}>
-        {/* ... UI for sets ... */}
         <List>
             {currentExerciseSets.map((set, setIndex) => (
                 <ListItem key={setIndex} divider>
@@ -223,7 +232,6 @@ const ActiveWorkout: React.FC = () => {
           open={true}
           autoHideDuration={6000}
           onClose={() => handleCloseReminder(reminder.id)}
-          message={reminder.message}
           anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         >
             <Alert onClose={() => handleCloseReminder(reminder.id)} severity="info" sx={{ width: '100%' }}>

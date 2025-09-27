@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db, UserProfile, UserSettings, TrainingPreferences, ReminderSettings } from '../db';
+import { db, type UserProfile, type UserSettings, type TrainingPreferences, type ReminderSettings } from '../db';
 import {
   Container,
   Typography,
-  Grid,
   Card,
   CardContent,
   TextField,
@@ -14,20 +13,18 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  SelectChangeEvent,
   Switch,
-  FormControlLabel
+  FormControlLabel,
+  type SelectChangeEvent,
 } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 
 const Profile: React.FC = () => {
-  // Fetch data from Dexie tables
   const userProfile = useLiveQuery(() => db.userProfile.get(1));
   const userSettings = useLiveQuery(() => db.userSettings.get(1));
   const trainingPreferences = useLiveQuery(() => db.trainingPreferences.get(1));
   const reminderSettings = useLiveQuery(() => db.reminderSettings.get(1));
 
-  // Local state for form fields
   const [profile, setProfile] = useState<Partial<UserProfile>>({});
   const [settings, setSettings] = useState<Partial<UserSettings>>({});
   const [preferences, setPreferences] = useState<Partial<TrainingPreferences>>({});
@@ -61,7 +58,6 @@ const Profile: React.FC = () => {
     });
   };
 
-
   const handleSave = async () => {
     try {
       await db.transaction('rw', db.userProfile, db.userSettings, db.trainingPreferences, db.reminderSettings, async () => {
@@ -86,41 +82,46 @@ const Profile: React.FC = () => {
       <Typography variant="h4" component="h1" gutterBottom>
         Profile & Settings
       </Typography>
-      <Grid container spacing={3}>
-        {/* Personal Information Card */}
-        <Grid item xs={12}>
-          <Card><CardContent><Typography variant="h6" gutterBottom>Personal Information</Typography><Grid container spacing={2}><Grid item xs={12} sm={6}><TextField label="Name" name="name" value={profile.name || ''} onChange={handleProfileChange} fullWidth /></Grid><Grid item xs={12} sm={6}><TextField label="Email" name="email" value={profile.email || ''} onChange={handleProfileChange} fullWidth disabled /></Grid><Grid item xs={12} sm={6}><TextField label="Age" name="age" type="number" value={profile.age || ''} onChange={handleProfileChange} fullWidth /></Grid></Grid></CardContent></Card>
-        </Grid>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+        <Card>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>Personal Information</Typography>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                <TextField label="Name" name="name" value={profile.name || ''} onChange={handleProfileChange} sx={{ flexGrow: 1, minWidth: '200px' }} />
+                <TextField label="Email" name="email" value={profile.email || ''} onChange={handleProfileChange} sx={{ flexGrow: 1, minWidth: '200px' }} disabled />
+                <TextField label="Age" name="age" type="number" value={profile.age || ''} onChange={handleProfileChange} sx={{ flexGrow: 1, minWidth: '200px' }} />
+            </Box>
+          </CardContent>
+        </Card>
 
-        {/* App Settings Card */}
-        <Grid item xs={12} md={6}>
-          <Card><CardContent><Typography variant="h6" gutterBottom>App Settings</Typography><FormControl fullWidth margin="normal"><InputLabel>Units</InputLabel><Select name="units" value={settings.units || 'imperial'} onChange={handleSettingsChange}><MenuItem value="imperial">Imperial (lbs)</MenuItem><MenuItem value="metric">Metric (kg)</MenuItem></Select></FormControl></CardContent></Card>
-        </Grid>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+            <Box sx={{ width: '100%', '@media (min-width:768px)': { width: 'calc(50% - 12px)' } }}>
+                <Card>
+                    <CardContent><Typography variant="h6" gutterBottom>App Settings</Typography><FormControl fullWidth margin="normal"><InputLabel>Units</InputLabel><Select name="units" value={settings.units || 'imperial'} onChange={handleSettingsChange}><MenuItem value="imperial">Imperial (lbs)</MenuItem><MenuItem value="metric">Metric (kg)</MenuItem></Select></FormControl></CardContent>
+                </Card>
+            </Box>
+            <Box sx={{ width: '100%', '@media (min-width:768px)': { width: 'calc(50% - 12px)' } }}>
+                <Card>
+                    <CardContent><Typography variant="h6" gutterBottom>Training Goals</Typography><FormControl fullWidth margin="normal"><InputLabel>Primary Goal</InputLabel><Select name="primaryGoal" value={preferences.primaryGoal || 'build_muscle'} onChange={handlePreferencesChange}><MenuItem value="build_muscle">Build Muscle</MenuItem><MenuItem value="increase_strength">Increase Strength</MenuItem><MenuItem value="lose_fat">Lose Fat</MenuItem></Select></FormControl><FormControl fullWidth margin="normal"><InputLabel>Workout Frequency</InputLabel><Select name="workoutFrequency" value={preferences.workoutFrequency || 4} onChange={handlePreferencesChange}>{[...Array(7).keys()].map(i => (<MenuItem key={i+1} value={i+1}>{i+1} days/week</MenuItem>))}</Select></FormControl></CardContent>
+                </Card>
+            </Box>
+        </Box>
 
-        {/* Training Goals Card */}
-        <Grid item xs={12} md={6}>
-            <Card><CardContent><Typography variant="h6" gutterBottom>Training Goals</Typography><FormControl fullWidth margin="normal"><InputLabel>Primary Goal</InputLabel><Select name="primaryGoal" value={preferences.primaryGoal || 'build_muscle'} onChange={handlePreferencesChange}><MenuItem value="build_muscle">Build Muscle</MenuItem><MenuItem value="increase_strength">Increase Strength</MenuItem><MenuItem value="lose_fat">Lose Fat</MenuItem></Select></FormControl><FormControl fullWidth margin="normal"><InputLabel>Workout Frequency</InputLabel><Select name="workoutFrequency" value={preferences.workoutFrequency || 4} onChange={handlePreferencesChange}>{[...Array(7).keys()].map(i => (<MenuItem key={i+1} value={i+1}>{i+1} days/week</MenuItem>))}</Select></FormControl></CardContent></Card>
-        </Grid>
-
-        {/* Reminder Settings Card */}
-        <Grid item xs={12}>
-            <Card>
-                <CardContent>
-                    <Typography variant="h6" gutterBottom>Reminder Settings</Typography>
-                    <Box>
-                        <FormControlLabel control={<Switch checked={reminders.hydration?.enabled || false} onChange={handleReminderChange} name="hydration.enabled" />} label="Hydration Reminders" />
-                    </Box>
-                    <Box>
-                        <Typography sx={{mt: 2}}>Set Transition Alerts</Typography>
-                        <FormControlLabel control={<Switch checked={reminders.setTransition?.enabled || false} onChange={handleReminderChange} name="setTransition.enabled" />} label="Enable" />
-                        <FormControlLabel control={<Switch checked={reminders.setTransition?.sound || false} onChange={handleReminderChange} name="setTransition.sound" />} label="Sound" />
-                        <FormControlLabel control={<Switch checked={reminders.setTransition?.vibration || false} onChange={handleReminderChange} name="setTransition.vibration" />} label="Vibration" />
-                    </Box>
-                </CardContent>
-            </Card>
-        </Grid>
-
-      </Grid>
+        <Card>
+            <CardContent>
+                <Typography variant="h6" gutterBottom>Reminder Settings</Typography>
+                <Box>
+                    <FormControlLabel control={<Switch checked={reminders.hydration?.enabled || false} onChange={handleReminderChange} name="hydration.enabled" />} label="Hydration Reminders" />
+                </Box>
+                <Box>
+                    <Typography sx={{mt: 2}}>Set Transition Alerts</Typography>
+                    <FormControlLabel control={<Switch checked={reminders.setTransition?.enabled || false} onChange={handleReminderChange} name="setTransition.enabled" />} label="Enable" />
+                    <FormControlLabel control={<Switch checked={reminders.setTransition?.sound || false} onChange={handleReminderChange} name="setTransition.sound" />} label="Sound" />
+                    <FormControlLabel control={<Switch checked={reminders.setTransition?.vibration || false} onChange={handleReminderChange} name="setTransition.vibration" />} label="Vibration" />
+                </Box>
+            </CardContent>
+        </Card>
+      </Box>
       <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
         <Button variant="contained" startIcon={<SaveIcon />} onClick={handleSave}>
           Save Changes

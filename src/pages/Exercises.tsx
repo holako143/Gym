@@ -58,6 +58,7 @@ const Exercises: React.FC = () => {
       await db.exercises.add({
         name: newExerciseName,
         category: newExerciseCategory,
+        primaryMuscles: [], // Add default value for required property
       });
       setNewExerciseName('');
       setNewExerciseCategory('Chest');
@@ -119,7 +120,6 @@ const Exercises: React.FC = () => {
                 <ChevronRightIcon />
               </IconButton>
             }
-            button
           >
             <ListItemAvatar>
               <Avatar src={exercise.image}>

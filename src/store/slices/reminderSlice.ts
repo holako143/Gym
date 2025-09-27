@@ -1,12 +1,15 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ReminderSettings } from '../../db';
+import { type PayloadAction, createSlice } from '@reduxjs/toolkit';
+import type { ReminderSettings } from '../../db';
 
-export enum ReminderType {
-  WATER_BREAK = "💧 وقت شرب الماء",
-  SET_TRANSITION = "🔄 بدء الجلسة التالية",
-  EXERCISE_SWITCH = "➡️ الانتقال للتمرين التالي",
-  FORM_CHECK = "📐 مراجعة الوضعية",
-}
+export const ReminderType = {
+  WATER_BREAK: "💧 وقت شرب الماء",
+  SET_TRANSITION: "🔄 بدء الجلسة التالية",
+  EXERCISE_SWITCH: "➡️ الانتقال للتمرين التالي",
+  FORM_CHECK: "📐 مراجعة الوضعية",
+} as const;
+
+export type ReminderType = typeof ReminderType[keyof typeof ReminderType];
+
 
 export interface ActiveReminder {
   id: string; // Unique ID for the reminder, e.g., timestamp

@@ -2,7 +2,7 @@ import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleTheme } from '../store/slices/themeSlice';
-import { RootState } from '../store/store';
+import type { RootState } from '../store/store';
 import {
   AppBar,
   Toolbar,

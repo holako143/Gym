@@ -22,7 +22,7 @@ const BottomNav: React.FC = () => {
   // Find the current path to set the value for BottomNavigation
   const currentValue = navItems.find(item => item.path === location.pathname)?.path || '/';
 
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+  const handleChange = (_event: React.SyntheticEvent, newValue: string) => {
     navigate(newValue);
   };
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db, WorkoutPlan } from '../db';
+import { db, type WorkoutPlan } from '../db';
 import {
   Container,
   Typography,
@@ -228,7 +228,7 @@ const CreatePlan: React.FC = () => {
         <DialogContent>
           <List>
             {allExercises?.map(exercise => (
-              <ListItem key={exercise.id} button onClick={() => handleToggleExercise(exercise.id!)}>
+              <ListItem key={exercise.id} onClick={() => handleToggleExercise(exercise.id!)}>
                 <ListItemIcon>
                   <Checkbox
                     edge="start"
