@@ -3,10 +3,14 @@ import React, { useState } from 'react';
 import { useServerInsertedHTML } from 'next/navigation';
 import { CacheProvider } from '@emotion/react';
 import createCache from '@emotion/cache';
+import { stylisPluginRtl } from 'stylis-plugin-rtl';
 
 export default function EmotionRegistry({ children }: { children: React.ReactNode }) {
   const [{ cache, flush }] = useState(() => {
-    const cache = createCache({ key: 'mui' });
+    const cache = createCache({
+      key: 'mui-style',
+      stylisPlugins: [stylisPluginRtl]
+    });
     cache.compat = true;
     const prevInsert = cache.insert;
     let inserted: string[] = [];

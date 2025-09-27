@@ -87,13 +87,17 @@ export interface ProgressRecord {
     totalVolume: number;
 }
 
-// Initial data
+// Initial data in Arabic
 const initialExercises: Omit<Exercise, 'id'>[] = [
-    { name: 'Bench Press', category: 'Chest', primaryMuscles: ['Pectoralis Major'] },
-    { name: 'Pull-ups', category: 'Back', primaryMuscles: ['Latissimus Dorsi'] },
+    { name: 'بنش برس', category: 'صدر', primaryMuscles: ['العضلة الصدرية الكبرى'], secondaryMuscles: ['الترايسبس', 'الدالية'] },
+    { name: 'عقلة', category: 'ظهر', primaryMuscles: ['العضلة الظهرية العريضة'], secondaryMuscles: ['البايسبس', 'شبه المنحرفة'] },
+    { name: 'سكوات', category: 'أرجل', primaryMuscles: ['عضلات الفخذ الرباعية', 'الألوية الكبرى'], secondaryMuscles: ['أوتار الركبة', 'السمانة'] },
+    { name: 'رفرفة علوية', category: 'أكتاف', primaryMuscles: ['الدالية'], secondaryMuscles: ['الترايسبس'] },
+    { name: 'بايسبس كيرل', category: 'أذرع', primaryMuscles: ['البايسبس'] },
 ];
-const initialUserProfile: UserProfile = { id: 1, name: 'Alex', email: 'alex.fitness@example.com' };
-const initialUserSettings: UserSettings = { id: 1, units: 'imperial', language: 'English', theme: 'dark' };
+
+const initialUserProfile: UserProfile = { id: 1, name: 'أليكس', email: 'alex.fitness@example.com' };
+const initialUserSettings: UserSettings = { id: 1, units: 'metric', language: 'Arabic', theme: 'dark' };
 const initialTrainingPreferences: TrainingPreferences = { id: 1, primaryGoal: 'build_muscle', workoutFrequency: 4 };
 const initialReminderSettings: ReminderSettings = {
     id: 1,

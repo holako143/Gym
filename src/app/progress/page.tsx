@@ -6,10 +6,10 @@ const Progress: React.FC = () => {
   return (
     <Container>
       <Typography variant="h4" component="h1" gutterBottom>
-        Progress
+        التقدم
       </Typography>
       <Typography>
-        Progress tracking and analytics will be displayed here.
+        سيتم عرض تتبع التقدم والتحليلات هنا.
       </Typography>
     </Container>
   );

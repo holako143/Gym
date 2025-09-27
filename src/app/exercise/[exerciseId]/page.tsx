@@ -18,7 +18,7 @@ const ExerciseDetail: React.FC = () => {
     return (
       <Container sx={{ textAlign: 'center', mt: 4 }}>
         <CircularProgress />
-        <Typography>Loading exercise details...</Typography>
+        <Typography>جاري تحميل تفاصيل التمرين...</Typography>
       </Container>
     );
   }
@@ -50,7 +50,7 @@ const ExerciseDetail: React.FC = () => {
         </Stack>
 
         <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
-          Primary Muscles
+          العضلات الأساسية
         </Typography>
         <Stack direction="row" spacing={1}>
             {exercise.primaryMuscles.map(muscle => (
@@ -61,7 +61,7 @@ const ExerciseDetail: React.FC = () => {
         {exercise.secondaryMuscles && exercise.secondaryMuscles.length > 0 && (
             <>
                 <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
-                    Secondary Muscles
+                    العضلات الثانوية
                 </Typography>
                 <Stack direction="row" spacing={1}>
                     {exercise.secondaryMuscles.map(muscle => (
@@ -74,7 +74,7 @@ const ExerciseDetail: React.FC = () => {
         {exercise.instructions && (
              <>
                 <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
-                    Instructions
+                    التعليمات
                 </Typography>
                 <Typography sx={{ whiteSpace: 'pre-wrap' }}>
                     {exercise.instructions}

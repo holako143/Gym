@@ -28,24 +28,24 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import Link from 'next/link';
 
-const categories = ['All', 'Chest', 'Back', 'Legs', 'Shoulders', 'Arms'];
+const categories = ['الكل', 'صدر', 'ظهر', 'أرجل', 'أكتاف', 'أذرع'];
 
 const Exercises: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeCategory, setActiveCategory] = useState('All');
+  const [activeCategory, setActiveCategory] = useState('الكل');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newExerciseName, setNewExerciseName] = useState('');
-  const [newExerciseCategory, setNewExerciseCategory] = useState('Chest');
+  const [newExerciseCategory, setNewExerciseCategory] = useState('صدر');
 
   const allExercises = useLiveQuery(() => db.exercises.toArray(), []);
 
   const filteredExercises = useMemo(() => {
     if (!allExercises) return [];
     return allExercises.filter(exercise => {
-      const matchesCategory = activeCategory === 'All' || exercise.category === activeCategory;
+      const matchesCategory = activeCategory === 'الكل' || exercise.category === activeCategory;
       const matchesSearch = exercise.name.toLowerCase().includes(searchTerm.toLowerCase());
       return matchesCategory && matchesSearch;
     });
@@ -59,13 +59,13 @@ const Exercises: React.FC = () => {
       await db.exercises.add({
         name: newExerciseName,
         category: newExerciseCategory,
-        primaryMuscles: [], // Add default value for required property
+        primaryMuscles: [],
       });
       setNewExerciseName('');
-      setNewExerciseCategory('Chest');
+      setNewExerciseCategory('صدر');
       setIsModalOpen(false);
     } catch (error) {
-      console.error("Failed to add exercise:", error);
+      console.error("فشل إضافة التمرين:", error);
     }
   };
 
@@ -74,17 +74,17 @@ const Exercises: React.FC = () => {
       <Box sx={{ p: 2 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
             <Typography variant="h4" component="h1" gutterBottom>
-                Exercises
+                مكتبة التمارين
             </Typography>
             <Button variant="contained" startIcon={<AddIcon />} onClick={() => setIsModalOpen(true)}>
-                Add
+                إضافة
             </Button>
         </Box>
 
         <TextField
           fullWidth
           variant="outlined"
-          placeholder="Search exercises"
+          placeholder="ابحث عن تمرين..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           InputProps={{
@@ -97,7 +97,7 @@ const Exercises: React.FC = () => {
           sx={{ mb: 2 }}
         />
 
-        <Typography variant="h6" gutterBottom>Categories</Typography>
+        <Typography variant="h6" gutterBottom>الفئات</Typography>
         <Stack direction="row" spacing={1} sx={{ overflowX: 'auto', pb: 2 }}>
           {categories.map(category => (
             <Chip
@@ -117,8 +117,8 @@ const Exercises: React.FC = () => {
             component={Link}
             href={`/exercise/${exercise.id}`}
             secondaryAction={
-              <IconButton edge="end" aria-label="details">
-                <ChevronRightIcon />
+              <IconButton edge="end" aria-label="التفاصيل">
+                <ChevronLeftIcon />
               </IconButton>
             }
           >
@@ -133,14 +133,14 @@ const Exercises: React.FC = () => {
       </List>
 
       <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <DialogTitle>Add New Exercise</DialogTitle>
+        <DialogTitle>إضافة تمرين جديد</DialogTitle>
         <DialogContent>
           <Box component="form" onSubmit={handleAddExercise} sx={{ mt: 2 }}>
             <TextField
               autoFocus
               margin="dense"
               id="name"
-              label="Exercise Name"
+              label="اسم التمرين"
               type="text"
               fullWidth
               variant="standard"
@@ -149,15 +149,15 @@ const Exercises: React.FC = () => {
               required
             />
             <FormControl fullWidth margin="dense" variant="standard">
-              <InputLabel id="category-label">Category</InputLabel>
+              <InputLabel id="category-label">الفئة</InputLabel>
               <Select
                 labelId="category-label"
                 id="category"
                 value={newExerciseCategory}
                 onChange={(e) => setNewExerciseCategory(e.target.value)}
-                label="Category"
+                label="الفئة"
               >
-                {categories.filter(c => c !== 'All').map(cat => (
+                {categories.filter(c => c !== 'الكل').map(cat => (
                   <MenuItem key={cat} value={cat}>{cat}</MenuItem>
                 ))}
               </Select>
@@ -165,8 +165,8 @@ const Exercises: React.FC = () => {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setIsModalOpen(false)}>Cancel</Button>
-          <Button onClick={handleAddExercise} variant="contained">Add</Button>
+          <Button onClick={() => setIsModalOpen(false)}>إلغاء</Button>
+          <Button onClick={handleAddExercise} variant="contained">إضافة</Button>
         </DialogActions>
       </Dialog>
     </>

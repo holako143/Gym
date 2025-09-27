@@ -26,7 +26,7 @@ import {
   Snackbar,
   Alert
 } from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import DoneIcon from '@mui/icons-material/Done';
@@ -180,7 +180,7 @@ const ActiveWorkout: React.FC = () => {
       <AppBar position="sticky">
         <Toolbar>
           <IconButton edge="start" color="inherit" onClick={() => router.back()} aria-label="back">
-            <ArrowBackIcon />
+            <ArrowForwardIcon />
           </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1, textAlign: 'center' }}>
             {exerciseDetails?.name}

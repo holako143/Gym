@@ -9,11 +9,11 @@ import LeaderboardIcon from '@mui/icons-material/Leaderboard';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 
 const navItems = [
-  { path: '/', label: 'Workouts', icon: <FitnessCenterIcon /> },
-  { path: '/exercises', label: 'Exercises', icon: <SearchIcon /> },
-  { path: '/plans', label: 'Plans', icon: <EventNoteIcon /> },
-  { path: '/progress', label: 'Progress', icon: <LeaderboardIcon /> },
-  { path: '/achievements', label: 'Achievements', icon: <EmojiEventsIcon /> },
+  { path: '/', label: 'التمارين', icon: <FitnessCenterIcon /> },
+  { path: '/exercises', label: 'المكتبة', icon: <SearchIcon /> },
+  { path: '/plans', label: 'الخطط', icon: <EventNoteIcon /> },
+  { path: '/progress', label: 'التقدم', icon: <LeaderboardIcon /> },
+  { path: '/achievements', label: 'الإنجازات', icon: <EmojiEventsIcon /> },
 ];
 
 const BottomNav: React.FC = () => {

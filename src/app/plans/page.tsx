@@ -21,7 +21,7 @@ const Plans: React.FC = () => {
     <Container>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
             <Typography variant="h4" component="h1" gutterBottom>
-                Workout Plans
+                الخطط التدريبية
             </Typography>
             <Button
               variant="contained"
@@ -29,7 +29,7 @@ const Plans: React.FC = () => {
               component={Link}
               href="/create-plan"
             >
-                New Plan
+                خطة جديدة
             </Button>
         </Box>
 
@@ -47,7 +47,7 @@ const Plans: React.FC = () => {
               </CardContent>
               <CardActions>
                 <Button component={Link} href={`/workout/${plan.id}`} size="small">
-                  Start Workout
+                  بدء التمرين
                 </Button>
               </CardActions>
             </Card>

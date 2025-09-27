@@ -17,10 +17,17 @@ import Brightness7Icon from '@mui/icons-material/Brightness7';
 import BottomNav from './BottomNav';
 
 const getPageTitle = (pathname: string): string => {
-    if (pathname === '/') return 'Workouts';
-    const cleanPath = pathname.substring(1);
-    const title = cleanPath.split('/')[0];
-    return title.charAt(0).toUpperCase() + title.slice(1);
+    const route = pathname.split('/')[1] || '';
+    switch (route) {
+        case '': return 'التمارين';
+        case 'exercises': return 'مكتبة التمارين';
+        case 'plans': return 'الخطط التدريبية';
+        case 'progress': return 'التقدم';
+        case 'achievements': return 'الإنجازات';
+        case 'create-plan': return 'إنشاء خطة جديدة';
+        case 'exercise': return 'تفاصيل التمرين';
+        default: return 'متتبع التمارين';
+    }
 }
 
 const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -29,8 +36,7 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const themeMode = useSelector((state: RootState) => state.theme.mode);
   const pageTitle = getPageTitle(pathname);
 
-  // Define routes where the main shell (AppBar, BottomNav) should not be displayed
-  const noShellRoutes = ['/workout', '/login', '/signup'];
+  const noShellRoutes = ['/workout'];
   const shouldShowShell = !noShellRoutes.some(route => pathname.startsWith(route));
 
   if (!shouldShowShell) {

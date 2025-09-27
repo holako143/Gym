@@ -6,10 +6,10 @@ const Workouts: React.FC = () => {
   return (
     <Container>
       <Typography variant="h4" component="h1" gutterBottom>
-        Workouts
+        جلسات التمرين
       </Typography>
       <Typography>
-        Your workout sessions and history will be displayed here.
+        سيتم عرض جلسات التمرين السابقة والمجدولة هنا.
       </Typography>
     </Container>
   );

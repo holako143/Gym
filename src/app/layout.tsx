@@ -5,8 +5,8 @@ import Providers from '@/components/Providers';
 import AppShell from '@/components/AppShell';
 
 export const metadata: Metadata = {
-  title: 'Gym Tracker PWA',
-  description: 'A bodybuilding PWA that works completely offline.',
+  title: 'متتبع التمارين الرياضية',
+  description: 'تطبيق ويب تقدمي لكمال الأجسام يعمل بالكامل بدون انترنت',
 };
 
 export default function RootLayout({
@@ -15,7 +15,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="ar" dir="rtl">
       <body>
         <EmotionRegistry>
           <Providers>

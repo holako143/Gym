@@ -6,10 +6,10 @@ const Achievements: React.FC = () => {
   return (
     <Container>
       <Typography variant="h4" component="h1" gutterBottom>
-        Achievements
+        الإنجازات
       </Typography>
       <Typography>
-        Your trophies and unlocked achievements will be displayed here.
+        سيتم عرض الجوائز والإنجازات التي حققتها هنا.
       </Typography>
     </Container>
   );

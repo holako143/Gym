@@ -26,7 +26,7 @@ import {
   ListItemText,
   Stack
 } from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import SaveIcon from '@mui/icons-material/Save';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddIcon from '@mui/icons-material/Add';
@@ -85,7 +85,7 @@ const CreatePlan: React.FC = () => {
         const exerciseDetails = allExercises?.find(ex => ex.id === id);
         return {
             exerciseId: id,
-            name: exerciseDetails?.name || 'Unknown Exercise',
+            name: exerciseDetails?.name || 'تمرين غير معروف',
             sets: 3,
             reps: '8-12',
             rest: 60,
@@ -115,7 +115,7 @@ const CreatePlan: React.FC = () => {
 
   const handleSave = async () => {
     if (!planName.trim()) {
-      alert('Plan name is required.');
+      alert('اسم الخطة مطلوب.');
       return;
     }
 
@@ -137,8 +137,8 @@ const CreatePlan: React.FC = () => {
       await db.workoutPlans.add(planToSave);
       router.push('/plans');
     } catch (error) {
-      console.error("Failed to save plan:", error);
-      alert("Failed to save plan.");
+      console.error("فشل حفظ الخطة:", error);
+      alert("فشل حفظ الخطة.");
     }
   };
 
@@ -146,20 +146,20 @@ const CreatePlan: React.FC = () => {
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       <AppBar position="sticky">
         <Toolbar>
-          <IconButton edge="start" color="inherit" onClick={() => router.back()} aria-label="back">
-            <ArrowBackIcon />
+          <IconButton edge="start" color="inherit" onClick={() => router.back()} aria-label="رجوع">
+            <ArrowForwardIcon />
           </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Create New Plan
+            إنشاء خطة جديدة
           </Typography>
           <Button color="inherit" startIcon={<SaveIcon />} onClick={handleSave}>
-            Save
+            حفظ
           </Button>
         </Toolbar>
       </AppBar>
       <Container component="main" sx={{ flexGrow: 1, py: 3, overflowY: 'auto' }}>
         <TextField
-          label="Plan Name"
+          label="اسم الخطة"
           value={planName}
           onChange={(e) => setPlanName(e.target.value)}
           fullWidth
@@ -167,7 +167,7 @@ const CreatePlan: React.FC = () => {
           margin="normal"
         />
         <TextField
-          label="Description"
+          label="الوصف"
           value={planDescription}
           onChange={(e) => setPlanDescription(e.target.value)}
           fullWidth
@@ -176,12 +176,12 @@ const CreatePlan: React.FC = () => {
           margin="normal"
         />
 
-        <Typography variant="h5" sx={{ mt: 3, mb: 1 }}>Workout Days</Typography>
+        <Typography variant="h5" sx={{ mt: 3, mb: 1 }}>أيام التمرين</Typography>
 
         {days.map((day, dayIndex) => (
           <Accordion key={dayIndex} defaultExpanded>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography sx={{ flexGrow: 1 }}>Day {day.day}</Typography>
+              <Typography sx={{ flexGrow: 1 }}>اليوم {day.day}</Typography>
               <IconButton size="small" onClick={(e) => { e.stopPropagation(); removeDay(dayIndex); }}>
                 <DeleteIcon />
               </IconButton>
@@ -198,28 +198,28 @@ const CreatePlan: React.FC = () => {
                                     </IconButton>
                                 </Box>
                                 <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
-                                    <TextField label="Sets" size="small" type="number" value={exercise.sets} onChange={(e) => handleExerciseDetailChange(dayIndex, exIndex, 'sets', e.target.value)} />
-                                    <TextField label="Reps" size="small" value={exercise.reps} onChange={(e) => handleExerciseDetailChange(dayIndex, exIndex, 'reps', e.target.value)} />
-                                    <TextField label="Rest (s)" size="small" type="number" value={exercise.rest} onChange={(e) => handleExerciseDetailChange(dayIndex, exIndex, 'rest', e.target.value)} />
+                                    <TextField label="مجموعات" size="small" type="number" value={exercise.sets} onChange={(e) => handleExerciseDetailChange(dayIndex, exIndex, 'sets', e.target.value)} />
+                                    <TextField label="تكرارات" size="small" value={exercise.reps} onChange={(e) => handleExerciseDetailChange(dayIndex, exIndex, 'reps', e.target.value)} />
+                                    <TextField label="راحة (ث)" size="small" type="number" value={exercise.rest} onChange={(e) => handleExerciseDetailChange(dayIndex, exIndex, 'rest', e.target.value)} />
                                 </Stack>
                            </Box>
                         </ListItem>
                     ))}
                 </List>
               <Button startIcon={<AddIcon />} onClick={() => openExerciseDialog(dayIndex)}>
-                Add Exercise
+                إضافة تمرين
               </Button>
             </AccordionDetails>
           </Accordion>
         ))}
 
         <Button fullWidth variant="outlined" sx={{ mt: 2 }} onClick={addDay}>
-          Add Day
+          إضافة يوم
         </Button>
       </Container>
 
       <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} fullWidth maxWidth="xs">
-        <DialogTitle>Select Exercises</DialogTitle>
+        <DialogTitle>اختر التمارين</DialogTitle>
         <DialogContent>
           <List>
             {allExercises?.map(exercise => (
@@ -238,8 +238,8 @@ const CreatePlan: React.FC = () => {
           </List>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setIsDialogOpen(false)}>Cancel</Button>
-          <Button onClick={addExercisesToDay} variant="contained">Add Selected</Button>
+          <Button onClick={() => setIsDialogOpen(false)}>إلغاء</Button>
+          <Button onClick={addExercisesToDay} variant="contained">إضافة المحدد</Button>
         </DialogActions>
       </Dialog>
     </Box>
