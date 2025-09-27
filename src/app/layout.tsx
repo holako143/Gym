@@ -1,7 +1,8 @@
 import './globals.css';
 import type { Metadata } from 'next';
-import EmotionRegistry from '../theme/EmotionRegistry';
-import Providers from '../components/Providers';
+import EmotionRegistry from '@/theme/EmotionRegistry';
+import Providers from '@/components/Providers';
+import AppShell from '@/components/AppShell';
 
 export const metadata: Metadata = {
   title: 'Gym Tracker PWA',
@@ -18,7 +19,7 @@ export default function RootLayout({
       <body>
         <EmotionRegistry>
           <Providers>
-            {children}
+            <AppShell>{children}</AppShell>
           </Providers>
         </EmotionRegistry>
       </body>

@@ -1,9 +1,9 @@
 "use client";
-import React, { useEffect } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import React from 'react';
+import { usePathname } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
-import { toggleTheme } from '../store/slices/themeSlice';
-import type { RootState } from '../store/store';
+import { toggleTheme } from '@/store/slices/themeSlice';
+import type { RootState } from '@/store/store';
 import {
   AppBar,
   Toolbar,
@@ -14,7 +14,6 @@ import {
 } from '@mui/material';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import BottomNav from './BottomNav';
 
 const getPageTitle = (pathname: string): string => {
@@ -24,23 +23,18 @@ const getPageTitle = (pathname: string): string => {
     return title.charAt(0).toUpperCase() + title.slice(1);
 }
 
-const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const dispatch = useDispatch();
   const pathname = usePathname();
-  const router = useRouter();
   const themeMode = useSelector((state: RootState) => state.theme.mode);
-  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   const pageTitle = getPageTitle(pathname);
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/login');
-    }
-  }, [isAuthenticated, router]);
+  // Define routes where the main shell (AppBar, BottomNav) should not be displayed
+  const noShellRoutes = ['/workout', '/login', '/signup'];
+  const shouldShowShell = !noShellRoutes.some(route => pathname.startsWith(route));
 
-  // Don't render layout for unauthenticated users, as they will be redirected.
-  if (!isAuthenticated) {
-    return null;
+  if (!shouldShowShell) {
+    return <>{children}</>;
   }
 
   return (
@@ -52,9 +46,6 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           </Typography>
           <IconButton sx={{ ml: 1 }} onClick={() => dispatch(toggleTheme())} color="inherit">
             {themeMode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
-          </IconButton>
-          <IconButton sx={{ ml: 1 }} onClick={() => router.push('/profile')} color="inherit">
-            <AccountCircleIcon />
           </IconButton>
         </Toolbar>
       </AppBar>
@@ -68,4 +59,4 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   );
 };
 
-export default Layout;
+export default AppShell;

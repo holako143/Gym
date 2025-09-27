@@ -44,7 +44,6 @@ const ActiveWorkout: React.FC = () => {
   const planId = params.planId;
 
   const dispatch = useDispatch();
-  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
 
   const plan = useLiveQuery(() => db.workoutPlans.get(Number(planId)), [planId]);
   const exercises = useLiveQuery(() => db.exercises.toArray(), []);
@@ -56,12 +55,6 @@ const ActiveWorkout: React.FC = () => {
   const [sessionSets, setSessionSets] = useState<CompletedSet[][]>([]);
   const [sessionStartTime, setSessionStartTime] = useState<Date | null>(null);
   const [restTimer, setRestTimer] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/login');
-    }
-  }, [isAuthenticated, router]);
 
   useEffect(() => {
     if (reminderSettings) {
@@ -167,10 +160,6 @@ const ActiveWorkout: React.FC = () => {
 
   const handleCloseReminder = (id: string) => {
       dispatch(removeActiveReminder(id));
-  }
-
-  if (!isAuthenticated) {
-      return null;
   }
 
   if (!plan || !exercises || sessionSets.length === 0 || !reminderSettings) {
