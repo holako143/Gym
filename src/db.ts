@@ -83,6 +83,27 @@ const initialExercises: Omit<Exercise, 'id'>[] = [
     { name: 'Bicep Curls', category: 'Arms', primaryMuscles: ['Biceps'] },
 ];
 
+const initialUserProfile: UserProfile = {
+    id: 1,
+    name: 'Alex',
+    email: 'alex.fitness@example.com',
+    age: 28,
+    gender: 'male',
+};
+
+const initialUserSettings: UserSettings = {
+    id: 1,
+    units: 'imperial',
+    language: 'English',
+    theme: 'dark',
+};
+
+const initialTrainingPreferences: TrainingPreferences = {
+    id: 1,
+    primaryGoal: 'build_muscle',
+    workoutFrequency: 4,
+};
+
 
 export class MySubClassedDexie extends Dexie {
   // Define tables
@@ -108,8 +129,6 @@ export class MySubClassedDexie extends Dexie {
         progress: '++id, exerciseId, date',
     });
 
-    // We keep the old version definition for migration purposes,
-    // although we won't define a migration function for this simple case.
     this.version(1).stores({
         exercises: '++id, name, category',
         workoutPlans: '++id, name',
@@ -120,10 +139,20 @@ export class MySubClassedDexie extends Dexie {
   }
 
   async populate() {
-    const count = await this.exercises.count();
-    if (count === 0) {
-      await this.exercises.bulkAdd(initialExercises);
-    }
+    await db.transaction('rw', this.exercises, this.userProfile, this.userSettings, this.trainingPreferences, async () => {
+        if ((await this.exercises.count()) === 0) {
+            await this.exercises.bulkAdd(initialExercises);
+        }
+        if ((await this.userProfile.count()) === 0) {
+            await this.userProfile.add(initialUserProfile);
+        }
+        if ((await this.userSettings.count()) === 0) {
+            await this.userSettings.add(initialUserSettings);
+        }
+        if ((await this.trainingPreferences.count()) === 0) {
+            await this.trainingPreferences.add(initialTrainingPreferences);
+        }
+    });
   }
 }
 

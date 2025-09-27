@@ -12,27 +12,30 @@ import {
   IconButton
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-
-const workoutPlans = [
-  { id: 1, name: 'Full Body Strength', description: 'A 3-day routine focusing on compound lifts.' },
-  { id: 2, name: 'Push/Pull/Legs', description: 'A classic split for intermediate lifters.' },
-  { id: 3, name: 'High-Volume Hypertrophy', description: 'Maximize muscle growth with this intense plan.' },
-];
+import { useLiveQuery } from 'dexie-react-hooks';
+import { db } from '../db';
 
 const Plans: React.FC = () => {
+  const workoutPlans = useLiveQuery(() => db.workoutPlans.toArray());
+
   return (
     <Container>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
             <Typography variant="h4" component="h1" gutterBottom>
                 Workout Plans
             </Typography>
-            <Button variant="contained" startIcon={<AddIcon />}>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              component={RouterLink}
+              to="/create-plan"
+            >
                 New Plan
             </Button>
         </Box>
 
       <Grid container spacing={3}>
-        {workoutPlans.map(plan => (
+        {workoutPlans?.map(plan => (
           <Grid item xs={12} sm={6} md={4} key={plan.id}>
             <Card>
               <CardContent>
