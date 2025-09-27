@@ -1,5 +1,17 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
+import {
+  Container,
+  Typography,
+  Grid,
+  Card,
+  CardContent,
+  CardActions,
+  Button,
+  Box,
+  IconButton
+} from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 
 const workoutPlans = [
   { id: 1, name: 'Full Body Strength', description: 'A 3-day routine focusing on compound lifts.' },
@@ -9,33 +21,38 @@ const workoutPlans = [
 
 const Plans: React.FC = () => {
   return (
-    <div className="p-4">
-      <header className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Workout Plans</h1>
-        <button className="flex items-center justify-center rounded-full p-2 text-gray-600 hover:bg-primary/20 dark:text-gray-300 dark:hover:bg-primary/30">
-            <span className="material-symbols-outlined"> add </span>
-        </button>
-      </header>
+    <Container>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Typography variant="h4" component="h1" gutterBottom>
+                Workout Plans
+            </Typography>
+            <Button variant="contained" startIcon={<AddIcon />}>
+                New Plan
+            </Button>
+        </Box>
 
-      <div className="space-y-4">
+      <Grid container spacing={3}>
         {workoutPlans.map(plan => (
-          <div key={plan.id} className="bg-white dark:bg-gray-800/50 rounded-xl shadow-md overflow-hidden p-4">
-            <div className="flex items-start gap-4">
-              <div className="flex-1">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white">{plan.name}</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{plan.description}</p>
-                <Link to={`/workout/${plan.id}`}>
-                  <button className="mt-4 bg-primary/10 dark:bg-primary/20 text-primary font-bold py-2 px-4 rounded-full text-sm hover:bg-primary/20 dark:hover:bg-primary/30 transition-colors">
-                    Start Workout
-                  </button>
-                </Link>
-              </div>
-              <div className="w-24 h-24 rounded-lg bg-cover bg-center bg-gray-300 dark:bg-gray-700"></div>
-            </div>
-          </div>
+          <Grid item xs={12} sm={6} md={4} key={plan.id}>
+            <Card>
+              <CardContent>
+                <Typography variant="h5" component="div">
+                  {plan.name}
+                </Typography>
+                <Typography sx={{ mt: 1.5 }} color="text.secondary">
+                  {plan.description}
+                </Typography>
+              </CardContent>
+              <CardActions>
+                <Button component={RouterLink} to={`/workout/${plan.id}`} size="small">
+                  Start Workout
+                </Button>
+              </CardActions>
+            </Card>
+          </Grid>
         ))}
-      </div>
-    </div>
+      </Grid>
+    </Container>
   );
 };
 

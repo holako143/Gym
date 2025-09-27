@@ -1,61 +1,121 @@
 import Dexie, { type Table } from 'dexie';
 
+// 1. User-related interfaces
+export interface UserProfile {
+  id?: number; // Should be 1 for the single user
+  name: string;
+  email: string;
+  age?: number;
+  gender?: 'male' | 'female' | 'other';
+}
+
+export interface UserSettings {
+  id?: number; // Should be 1
+  units: 'metric' | 'imperial';
+  language: string;
+  theme: 'light' | 'dark';
+}
+
+export interface TrainingPreferences {
+    id?: number; // Should be 1
+    primaryGoal: 'build_muscle' | 'increase_strength' | 'lose_fat';
+    workoutFrequency: number; // days per week
+}
+
+
+// 2. Workout-related interfaces
 export interface Exercise {
   id?: number;
   name: string;
   category: string;
+  primaryMuscles: string[];
+  secondaryMuscles?: string[];
+  instructions?: string;
   image?: string;
+  videoUrl?: string;
 }
 
 export interface WorkoutPlan {
   id?: number;
   name: string;
   description: string;
+  days: {
+    day: number;
+    exercises: {
+      exerciseId: number;
+      sets: number;
+      reps: string; // e.g., "8-12"
+      rest: number; // in seconds
+    }[];
+  }[];
 }
 
-export interface Session {
+export interface WorkoutSession {
   id?: number;
-  workoutPlanId: number;
+  planId: number;
   date: Date;
-}
-
-export interface Progress {
-    id?: number;
-    date: Date;
-    weight: number;
-    reps: number;
+  duration: number; // in minutes
+  completedExercises: {
     exerciseId: number;
+    sets: {
+      reps: number;
+      weight: number;
+    }[];
+    notes?: string;
+  }[];
 }
 
-export interface Achievement {
+// 3. Analytics-related interfaces
+export interface ProgressRecord {
     id?: number;
-    name: string;
-    unlocked: boolean;
+    exerciseId: number;
+    date: Date;
+    maxWeight: number;
+    totalVolume: number;
 }
 
+// Initial data for seeding the database
 const initialExercises: Omit<Exercise, 'id'>[] = [
-    { name: 'Bench Press', category: 'Chest', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC0LZN_7nOq0bxOz9HTm_DA0CeeeQTQOGFjtMFRcsgezLLkb754ZbkDG_W8brKvFyHxHwI3xVDpRNqtUPTPeNUx5leX7zxg-s2ZFEiy_UAMpJh7faYLRePOyE4aLyIEiz4yjlDdh5rW78jFf01ckvnzolTb_kBmE4OqzcprM-LNSky8kr2rfLtAiwuTygZ9J-4mlTf0PAp4r8_neKoNHVdQs6zsd6O7IdmmOyRuLA6ORPNjJ6AnqhbOBqw08hoDuUwid3UdceiDME5I' },
-    { name: 'Pull-ups', category: 'Back', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDusMlG6vlBYys1cdTzApTzo8y1mca517Nd6AT9Uun3riH2mT_nJcyNgXH_zrPQxJYboonf3GlqC38TAtl0MTeRJ8P3Ng09dICbGwY2P3djuOq5kY2bNlR5mxbw16r3rTDQVN2wo_2C_91VDByI5lvXhx21Az1aPbE_NZ6uMOpqjddJ2Q-Px1-tU_sk2bS1PO5A-5lYjhTUts4v678pa12bwwtb-MDfqh9skOorInkC0KtQsBrnzO-97YPIAlpqZKzAIGZ5u0WphhV4' },
-    { name: 'Squats', category: 'Legs', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD4-VKRG7k23GDxl_TbdGAbLPGMWszmeDWuR7Lme5vQx0vRvomClhI7Bqxq4Yb777pcQfBiWmomE4sKYEqY8FF8u_5sRasApVucclbX6SkKASGynz6Jli-1Va7-X8704T5vgchrMY-T6JUqLuIRb6FQA40ZSRo7Ljtkf6Rm6t-yske1w7pjQHQcnNXXECRA4M3t1MHRX2re7KCZGgdSQZgMlPox1tES7Wf_LoTCNN3y3w84dNdGpqF11B1xNuXKo1lMn6mgMxRR52u_' },
-    { name: 'Overhead Press', category: 'Shoulders', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAm0VHLdEMSd79y2UKq2ZF-39pJ-kjFKyrh26C8hrlQd-OUb_MD-dTIA-s8ihNN8vAa5mKxrHbnCB6R5Bo07nSzKAzpqIb-vWTXFk0_fncx9jtHEkU-XIK99KFniUHjKWF1BFpQswH_Mh8fjHqcweTEp4_nLg3L5PXlk-AvT3ee72So3LziGEjTrvS1y3KDDopaLWNxpnLxNbBzwnCnlSMOVof_f-N3CyppladvtPt3XURJO-ZKM5YHvk4_jeEzuNPOWjddJKC7Ms5L' },
-    { name: 'Bicep Curls', category: 'Arms', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDGa5zKf8yXu3VMPNgwDIBhw7ypi6mGzUlWyhANvy7FRkCzyiPjwIocntgsuThtxd3yJ2ffLD9Ok6AXg4dLUWhh4TnV-e1iQk-4DNhq4KSJ7sX4RB2F795lwZCUjK4eyp9qppgaiZ8YccQ7oTzDZ5psJJwao47llQStWXSze2XkxdWGRN4fTe9erTF3f5XpC8uUI3qz-UkmtUkXEkpndcN1uUNZmX6wyWk7S_TrWRDF3F1UZfP_dDp3CRz8ZWf4uej3ZdJgJgtqzDym' },
+    { name: 'Bench Press', category: 'Chest', primaryMuscles: ['Pectoralis Major'], secondaryMuscles: ['Triceps', 'Deltoids'] },
+    { name: 'Pull-ups', category: 'Back', primaryMuscles: ['Latissimus Dorsi'], secondaryMuscles: ['Biceps', 'Trapezius'] },
+    { name: 'Squats', category: 'Legs', primaryMuscles: ['Quadriceps', 'Gluteus Maximus'], secondaryMuscles: ['Hamstrings', 'Calves'] },
+    { name: 'Overhead Press', category: 'Shoulders', primaryMuscles: ['Deltoids'], secondaryMuscles: ['Triceps'] },
+    { name: 'Bicep Curls', category: 'Arms', primaryMuscles: ['Biceps'] },
 ];
 
+
 export class MySubClassedDexie extends Dexie {
+  // Define tables
+  userProfile!: Table<UserProfile>;
+  userSettings!: Table<UserSettings>;
+  trainingPreferences!: Table<TrainingPreferences>;
   exercises!: Table<Exercise>;
   workoutPlans!: Table<WorkoutPlan>;
-  sessions!: Table<Session>;
-  progress!: Table<Progress>;
-  achievements!: Table<Achievement>;
+  sessions!: Table<WorkoutSession>;
+  progress!: Table<ProgressRecord>;
+
 
   constructor() {
     super('gymTrackerDB');
+    this.version(2).stores({
+        // New schema definition
+        userProfile: '++id, email',
+        userSettings: '++id',
+        trainingPreferences: '++id',
+        exercises: '++id, name, category, *primaryMuscles',
+        workoutPlans: '++id, name',
+        sessions: '++id, planId, date',
+        progress: '++id, exerciseId, date',
+    });
+
+    // We keep the old version definition for migration purposes,
+    // although we won't define a migration function for this simple case.
     this.version(1).stores({
-      exercises: '++id, name, category',
-      workoutPlans: '++id, name',
-      sessions: '++id, workoutPlanId, date',
-      progress: '++id, date, exerciseId',
-      achievements: '++id, name, unlocked'
+        exercises: '++id, name, category',
+        workoutPlans: '++id, name',
+        sessions: '++id, workoutPlanId, date',
+        progress: '++id, date, exerciseId',
+        achievements: '++id, name, unlocked'
     });
   }
 
@@ -68,6 +128,7 @@ export class MySubClassedDexie extends Dexie {
 }
 
 export const db = new MySubClassedDexie();
+
 db.populate().catch(err => {
     console.error("Failed to populate database:", err);
 });

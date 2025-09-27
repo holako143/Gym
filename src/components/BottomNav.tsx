@@ -1,37 +1,44 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { BottomNavigation, BottomNavigationAction, Paper } from '@mui/material';
+import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
+import SearchIcon from '@mui/icons-material/Search';
+import EventNoteIcon from '@mui/icons-material/EventNote';
+import LeaderboardIcon from '@mui/icons-material/Leaderboard';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 
 const navItems = [
-  { path: '/', label: 'Workouts', icon: 'fitness_center' },
-  { path: '/exercises', label: 'Exercises', icon: 'search' },
-  { path: '/plans', label: 'Plans', icon: 'event_note' },
-  { path: '/progress', label: 'Progress', icon: 'leaderboard' },
-  { path: '/achievements', label: 'Achievements', icon: 'emoji_events' },
+  { path: '/', label: 'Workouts', icon: <FitnessCenterIcon /> },
+  { path: '/exercises', label: 'Exercises', icon: <SearchIcon /> },
+  { path: '/plans', label: 'Plans', icon: <EventNoteIcon /> },
+  { path: '/progress', label: 'Progress', icon: <LeaderboardIcon /> },
+  { path: '/achievements', label: 'Achievements', icon: <EmojiEventsIcon /> },
 ];
 
 const BottomNav: React.FC = () => {
-  const activeLinkClass = 'text-primary';
-  const inactiveLinkClass = 'text-gray-500 dark:text-gray-400';
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Find the current path to set the value for BottomNavigation
+  const currentValue = navItems.find(item => item.path === location.pathname)?.path || '/';
+
+  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+    navigate(newValue);
+  };
 
   return (
-    <footer className="fixed bottom-0 left-0 right-0 bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-sm border-t border-gray-200 dark:border-gray-800 pb-safe">
-      <nav className="flex justify-around p-2">
+    <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 1100 }} elevation={3}>
+      <BottomNavigation value={currentValue} onChange={handleChange} showLabels>
         {navItems.map((item) => (
-          <NavLink
+          <BottomNavigationAction
             key={item.path}
-            to={item.path}
-            className={({ isActive }) =>
-              `flex flex-1 flex-col items-center justify-center gap-1 p-2 rounded-lg hover:bg-primary/10 ${
-                isActive ? activeLinkClass : inactiveLinkClass
-              }`
-            }
-          >
-            <span className="material-symbols-outlined">{item.icon}</span>
-            <span className="text-xs font-medium">{item.label}</span>
-          </NavLink>
+            label={item.label}
+            value={item.path}
+            icon={item.icon}
+          />
         ))}
-      </nav>
-    </footer>
+      </BottomNavigation>
+    </Paper>
   );
 };
 
