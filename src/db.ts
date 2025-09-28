@@ -1,91 +1,37 @@
 import Dexie, { type Table } from 'dexie';
 
-// 1. User-related interfaces
-export interface UserProfile {
-  id?: number;
-  name: string;
-  email: string;
-  age?: number;
-  gender?: 'male' | 'female' | 'other';
+// Interfaces remain largely the same, but the structure of WorkoutPlan changes.
+
+export interface UserProfile { id?: number; name: string; email: string; age?: number; gender?: 'male' | 'female' | 'other'; }
+export interface UserSettings { id?: number; units: 'metric' | 'imperial'; language: string; theme: 'light' | 'dark'; }
+export interface TrainingPreferences { id?: number; primaryGoal: 'build_muscle' | 'increase_strength' | 'lose_fat'; workoutFrequency: number; }
+export interface ReminderSettings { id?: number; hydration: { enabled: boolean; interval: number; }; setTransition: { enabled: boolean; sound: boolean; vibration: boolean; }; }
+export interface Exercise { id?: number; name: string; category: string; primaryMuscles: string[]; secondaryMuscles?: string[]; instructions?: string; image?: string; videoUrl?: string; }
+export interface WorkoutSession { id?: number; planId: number; date: Date; duration: number; completedExercises: { exerciseId: number; sets: { reps: number; weight: number; }[]; notes?: string; }[]; }
+export interface ProgressRecord { id?: number; exerciseId: number; date: Date; maxWeight: number; totalVolume: number; }
+
+// New structure for exercises within a plan
+export interface PlanExercise {
+    exerciseId: number;
+    sets: number;
+    reps: string;
+    rest: number; // Rest *after* this exercise. For supersets, this will be 0 for all but the last one.
 }
 
-export interface UserSettings {
-  id?: number;
-  units: 'metric' | 'imperial';
-  language: string;
-  theme: 'light' | 'dark';
-}
-
-export interface TrainingPreferences {
-    id?: number;
-    primaryGoal: 'build_muscle' | 'increase_strength' | 'lose_fat';
-    workoutFrequency: number; // days per week
-}
-
-// 2. Reminder interfaces
-export interface ReminderSettings {
-    id?: number; // Should be 1
-    hydration: {
-        enabled: boolean;
-        interval: number; // minutes
-    };
-    setTransition: {
-        enabled: boolean;
-        sound: boolean;
-        vibration: boolean;
-    };
-}
-
-// 3. Workout-related interfaces
-export interface Exercise {
-  id?: number;
-  name: string;
-  category: string;
-  primaryMuscles: string[];
-  secondaryMuscles?: string[];
-  instructions?: string;
-  image?: string;
-  videoUrl?: string;
+export interface WorkoutPlanDay {
+    day: number;
+    // An array of exercise groups. A group with 1 exercise is a normal set.
+    // A group with >1 exercise is a superset.
+    exerciseGroups: PlanExercise[][];
 }
 
 export interface WorkoutPlan {
   id?: number;
   name: string;
-  description: string;
-  days: {
-    day: number;
-    exercises: {
-      exerciseId: number;
-      sets: number;
-      reps: string;
-      rest: number;
-    }[];
-  }[];
+  description:string;
+  days: WorkoutPlanDay[];
 }
 
-export interface WorkoutSession {
-  id?: number;
-  planId: number;
-  date: Date;
-  duration: number;
-  completedExercises: {
-    exerciseId: number;
-    sets: {
-      reps: number;
-      weight: number;
-    }[];
-    notes?: string;
-  }[];
-}
-
-// 4. Analytics-related interfaces
-export interface ProgressRecord {
-    id?: number;
-    exerciseId: number;
-    date: Date;
-    maxWeight: number;
-    totalVolume: number;
-}
 
 // Initial data in Arabic
 const initialExercises: Omit<Exercise, 'id'>[] = [
@@ -106,7 +52,6 @@ const initialReminderSettings: ReminderSettings = {
 };
 
 export class MySubClassedDexie extends Dexie {
-  // Define tables
   userProfile!: Table<UserProfile>;
   userSettings!: Table<UserSettings>;
   trainingPreferences!: Table<TrainingPreferences>;
@@ -118,7 +63,8 @@ export class MySubClassedDexie extends Dexie {
 
   constructor() {
     super('gymTrackerDB');
-    this.version(3).stores({
+    // Bump the version for the new schema
+    this.version(4).stores({
         userProfile: '++id, email',
         userSettings: '++id',
         trainingPreferences: '++id',
@@ -128,7 +74,27 @@ export class MySubClassedDexie extends Dexie {
         sessions: '++id, planId, date',
         progress: '++id, exerciseId, date',
     });
-    // ... other versions
+
+    this.version(3).stores({
+        userProfile: '++id, email',
+        userSettings: '++id',
+        trainingPreferences: '++id',
+        reminderSettings: '++id',
+        exercises: '++id, name, category, *primaryMuscles',
+        workoutPlans: '++id, name',
+        sessions: '++id, planId, date',
+        progress: '++id, exerciseId, date',
+    }).upgrade(tx => {
+        // Migration logic for workoutPlans would go here if needed.
+        // For now, we assume existing plans can be manually updated or are not critical.
+        return tx.table("workoutPlans").toCollection().modify(plan => {
+            plan.days = plan.days.map((day: any) => ({
+                day: day.day,
+                exerciseGroups: day.exercises.map((ex: any) => [ex]) // Wrap each old exercise in a group
+            }));
+        });
+    });
+
     this.version(2).stores({
         userProfile: '++id, email',
         userSettings: '++id',
