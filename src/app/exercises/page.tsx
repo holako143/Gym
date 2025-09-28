@@ -2,38 +2,12 @@
 import React, { useState, useMemo } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/db';
-import {
-  Box,
-  TextField,
-  Button,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemAvatar,
-  Avatar,
-  Typography,
-  Chip,
-  Stack,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  IconButton,
-  InputAdornment
-} from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import SearchIcon from '@mui/icons-material/Search';
-import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import Link from 'next/link';
+import BottomNav from '@/components/BottomNav';
 
 const categories = ['الكل', 'صدر', 'ظهر', 'أرجل', 'أكتاف', 'أذرع'];
 
-const Exercises: React.FC = () => {
+const ExercisesPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('الكل');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -54,7 +28,6 @@ const Exercises: React.FC = () => {
   const handleAddExercise = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newExerciseName.trim()) return;
-
     try {
       await db.exercises.add({
         name: newExerciseName,
@@ -71,106 +44,97 @@ const Exercises: React.FC = () => {
 
   return (
     <>
-      <Box sx={{ p: 2 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-            <Typography variant="h4" component="h1" gutterBottom>
-                مكتبة التمارين
-            </Typography>
-            <Button variant="contained" startIcon={<AddIcon />} onClick={() => setIsModalOpen(true)}>
-                إضافة
-            </Button>
-        </Box>
-
-        <TextField
-          fullWidth
-          variant="outlined"
-          placeholder="ابحث عن تمرين..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-          sx={{ mb: 2 }}
-        />
-
-        <Typography variant="h6" gutterBottom>الفئات</Typography>
-        <Stack direction="row" spacing={1} sx={{ overflowX: 'auto', pb: 2 }}>
-          {categories.map(category => (
-            <Chip
-              key={category}
-              label={category}
-              onClick={() => setActiveCategory(category)}
-              color={activeCategory === category ? 'primary' : 'default'}
-            />
-          ))}
-        </Stack>
-      </Box>
-
-      <List>
-        {filteredExercises?.map((exercise) => (
-          <ListItem
-            key={exercise.id}
-            component={Link}
-            href={`/exercise/${exercise.id}`}
-            secondaryAction={
-              <IconButton edge="end" aria-label="التفاصيل">
-                <ChevronLeftIcon />
-              </IconButton>
-            }
-          >
-            <ListItemAvatar>
-              <Avatar src={exercise.image}>
-                {!exercise.image && <FitnessCenterIcon />}
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText primary={exercise.name} secondary={exercise.category} />
-          </ListItem>
-        ))}
-      </List>
-
-      <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <DialogTitle>إضافة تمرين جديد</DialogTitle>
-        <DialogContent>
-          <Box component="form" onSubmit={handleAddExercise} sx={{ mt: 2 }}>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="name"
-              label="اسم التمرين"
+      <div className="bg-brand-dark text-white min-h-screen flex flex-col">
+        <header className="p-4">
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-bold">مكتبة التمارين</h1>
+            <button onClick={() => setIsModalOpen(true)} className="bg-brand-green-accent text-brand-dark font-bold py-2 px-4 rounded-full">
+              + إضافة تمرين
+            </button>
+          </div>
+          <div className="mt-4">
+            <input
               type="text"
-              fullWidth
-              variant="standard"
-              value={newExerciseName}
-              onChange={(e) => setNewExerciseName(e.target.value)}
-              required
+              placeholder="ابحث عن تمرين..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full h-12 px-4 rounded-lg bg-brand-green-medium border-none text-white placeholder-brand-green-text focus:ring-1 focus:ring-brand-green-accent"
             />
-            <FormControl fullWidth margin="dense" variant="standard">
-              <InputLabel id="category-label">الفئة</InputLabel>
-              <Select
-                labelId="category-label"
-                id="category"
-                value={newExerciseCategory}
-                onChange={(e) => setNewExerciseCategory(e.target.value)}
-                label="الفئة"
+          </div>
+          <div className="flex gap-2 overflow-x-auto py-4">
+            {categories.map(category => (
+              <button
+                key={category}
+                onClick={() => setActiveCategory(category)}
+                className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium ${
+                  activeCategory === category
+                    ? 'bg-brand-green-accent text-brand-dark'
+                    : 'bg-brand-green-medium text-white'
+                }`}
               >
-                {categories.filter(c => c !== 'الكل').map(cat => (
-                  <MenuItem key={cat} value={cat}>{cat}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setIsModalOpen(false)}>إلغاء</Button>
-          <Button onClick={handleAddExercise} variant="contained">إضافة</Button>
-        </DialogActions>
-      </Dialog>
+                {category}
+              </button>
+            ))}
+          </div>
+        </header>
+
+        <main className="flex-grow px-4 space-y-2">
+          {filteredExercises?.map((exercise) => (
+            <Link key={exercise.id} href={`/exercise/${exercise.id}`} className="block">
+              <div className="flex items-center gap-4 p-3 bg-brand-green-medium rounded-lg">
+                <div className="w-16 h-16 bg-brand-green-light rounded-md flex-shrink-0">
+                  {/* Placeholder for image */}
+                </div>
+                <div className="flex-grow">
+                  <p className="font-bold">{exercise.name}</p>
+                  <p className="text-sm text-brand-green-text">{exercise.category}</p>
+                </div>
+                <span className="text-brand-green-text">&larr;</span>
+              </div>
+            </Link>
+          ))}
+        </main>
+        <BottomNav />
+      </div>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-brand-dark p-6 rounded-lg w-full max-w-sm">
+            <h2 className="text-xl font-bold mb-4">إضافة تمرين جديد</h2>
+            <form onSubmit={handleAddExercise}>
+              <div className="space-y-4">
+                <input
+                  type="text"
+                  placeholder="اسم التمرين"
+                  value={newExerciseName}
+                  onChange={(e) => setNewExerciseName(e.target.value)}
+                  className="w-full h-12 px-4 rounded-lg bg-brand-green-medium border-none text-white placeholder-brand-green-text"
+                  required
+                />
+                <select
+                  value={newExerciseCategory}
+                  onChange={(e) => setNewExerciseCategory(e.target.value)}
+                  className="w-full h-12 px-4 rounded-lg bg-brand-green-medium border-none text-white"
+                >
+                  {categories.filter(c => c !== 'الكل').map(cat => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex justify-end gap-3 mt-6">
+                <button type="button" onClick={() => setIsModalOpen(false)} className="py-2 px-4 rounded-lg bg-brand-green-medium text-white">
+                  إلغاء
+                </button>
+                <button type="submit" className="py-2 px-4 rounded-lg bg-brand-green-accent text-brand-dark font-bold">
+                  إضافة
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </>
   );
 };
 
-export default Exercises;
+export default ExercisesPage;

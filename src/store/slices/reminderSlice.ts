@@ -1,5 +1,5 @@
 import { type PayloadAction, createSlice } from '@reduxjs/toolkit';
-import type { ReminderSettings } from '../../db';
+import type { ReminderSettings } from '@/db';
 
 export const ReminderType = {
   WATER_BREAK: "💧 وقت شرب الماء",

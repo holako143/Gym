@@ -3,19 +3,6 @@ import React, { useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/db';
-import {
-  Container,
-  Typography,
-  Box,
-  Paper,
-  Button,
-  CircularProgress,
-  List,
-  ListItem,
-  ListItemText,
-  Divider,
-} from '@mui/material';
-import DoneAllIcon from '@mui/icons-material/DoneAll';
 
 const SessionSummary: React.FC = () => {
   const params = useParams();
@@ -26,18 +13,15 @@ const SessionSummary: React.FC = () => {
 
   const stats = useMemo(() => {
     if (!session) return null;
-
     let totalVolume = 0;
     let totalSets = 0;
     const completedExercises = session.completedExercises.length;
-
     session.completedExercises.forEach(exercise => {
       exercise.sets.forEach(set => {
         totalVolume += (set.weight || 0) * (set.reps || 0);
         totalSets++;
       });
     });
-
     return {
       duration: session.duration,
       totalVolume,
@@ -48,53 +32,47 @@ const SessionSummary: React.FC = () => {
 
   if (!session || !stats) {
     return (
-      <Container sx={{ textAlign: 'center', mt: 4 }}>
-        <CircularProgress />
-        <Typography>جاري تحميل ملخص الجلسة...</Typography>
-      </Container>
+      <div className="bg-brand-dark text-white min-h-screen flex justify-center items-center">
+        <p>جاري تحميل ملخص الجلسة...</p>
+      </div>
     );
   }
 
   return (
-    <Container maxWidth="sm" sx={{ py: 4 }}>
-      <Paper sx={{ p: 3, textAlign: 'center' }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          الجلسة مكتملة!
-        </Typography>
-        <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 3 }}>
-          أداء رائع، إليك ملخص جلستك.
-        </Typography>
+    <div className="bg-brand-dark text-white min-h-screen p-4 flex flex-col items-center justify-center text-center">
+      <div className="bg-brand-green-medium p-6 rounded-lg w-full max-w-sm">
+        <h1 className="text-3xl font-bold mb-2">الجلسة مكتملة!</h1>
+        <p className="text-brand-green-text mb-6">أداء رائع، إليك ملخص جلستك.</p>
 
-        <List>
-            <ListItem>
-                <ListItemText primary="المدة الإجمالية" secondary={`${stats.duration} دقيقة`} />
-            </ListItem>
-            <Divider />
-            <ListItem>
-                <ListItemText primary="الحجم التدريبي الكلي" secondary={`${stats.totalVolume} رطل`} />
-            </ListItem>
-            <Divider />
-            <ListItem>
-                <ListItemText primary="مجموع المجموعات" secondary={stats.totalSets} />
-            </ListItem>
-            <Divider />
-            <ListItem>
-                <ListItemText primary="التمارين المكتملة" secondary={stats.completedExercises} />
-            </ListItem>
-        </List>
+        <div className="space-y-3 text-right">
+          <div className="flex justify-between items-baseline p-3 bg-brand-green-dark rounded-md">
+            <span>المدة الإجمالية</span>
+            <span className="font-bold text-lg">{stats.duration} دقيقة</span>
+          </div>
+          <div className="flex justify-between items-baseline p-3 bg-brand-green-dark rounded-md">
+            <span>الحجم التدريبي الكلي</span>
+            <span className="font-bold text-lg">{stats.totalVolume} رطل</span>
+          </div>
+          <div className="flex justify-between items-baseline p-3 bg-brand-green-dark rounded-md">
+            <span>مجموع المجموعات</span>
+            <span className="font-bold text-lg">{stats.totalSets}</span>
+          </div>
+          <div className="flex justify-between items-baseline p-3 bg-brand-green-dark rounded-md">
+            <span>التمارين المكتملة</span>
+            <span className="font-bold text-lg">{stats.completedExercises}</span>
+          </div>
+        </div>
 
-        <Box sx={{ mt: 4 }}>
-          <Button
-            variant="contained"
-            size="large"
-            startIcon={<DoneAllIcon />}
+        <div className="mt-8">
+          <button
             onClick={() => router.push('/plans')}
+            className="w-full py-3 rounded-lg bg-brand-green-accent text-brand-dark font-bold"
           >
             تم
-          </Button>
-        </Box>
-      </Paper>
-    </Container>
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };
 

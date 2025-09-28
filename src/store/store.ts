@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
-import themeReducer from './slices/themeSlice';
-import reminderReducer from './slices/reminderSlice';
+import themeReducer from '@/store/slices/themeSlice';
+import reminderReducer from '@/store/slices/reminderSlice';
 
 export const store = configureStore({
   reducer: {

@@ -1,12 +1,10 @@
 import './globals.css';
 import type { Metadata } from 'next';
-import EmotionRegistry from '@/theme/EmotionRegistry';
 import Providers from '@/components/Providers';
-import AppShell from '@/components/AppShell';
 
 export const metadata: Metadata = {
-  title: 'متتبع التمارين الرياضية',
-  description: 'تطبيق ويب تقدمي لكمال الأجسام يعمل بالكامل بدون انترنت',
+  title: 'متتبع التمارين الذكي',
+  description: 'منصة تدريب ذكية تعمل دون اتصال بالإنترنت',
 };
 
 export default function RootLayout({
@@ -16,12 +14,18 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ar" dir="rtl">
-      <body>
-        <EmotionRegistry>
-          <Providers>
-            <AppShell>{children}</AppShell>
-          </Providers>
-        </EmotionRegistry>
+      <head>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link
+          rel="stylesheet"
+          as="style"
+          href="https://fonts.googleapis.com/css2?display=swap&family=Lexend:wght@400;500;700;900&family=Noto+Sans:wght@400;500;700;900"
+        />
+      </head>
+      <body className="dark bg-brand-dark">
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );

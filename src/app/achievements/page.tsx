@@ -1,18 +1,23 @@
 "use client";
 import React from 'react';
-import { Container, Typography } from '@mui/material';
+import BottomNav from '@/components/BottomNav';
 
-const Achievements: React.FC = () => {
+const AchievementsPage: React.FC = () => {
   return (
-    <Container>
-      <Typography variant="h4" component="h1" gutterBottom>
-        الإنجازات
-      </Typography>
-      <Typography>
-        سيتم عرض الجوائز والإنجازات التي حققتها هنا.
-      </Typography>
-    </Container>
+    <div className="bg-brand-dark text-white min-h-screen flex flex-col">
+      <header className="p-4">
+        <h1 className="text-2xl font-bold">الإنجازات</h1>
+      </header>
+
+      <main className="flex-grow p-4">
+        <div className="flex justify-center items-center h-full">
+          <p className="text-brand-green-text">سيتم عرض الجوائز والإنجازات التي حققتها هنا.</p>
+        </div>
+      </main>
+
+      <BottomNav />
+    </div>
   );
 };
 
-export default Achievements;
+export default AchievementsPage;

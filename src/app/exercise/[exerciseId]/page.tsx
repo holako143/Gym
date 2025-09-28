@@ -3,7 +3,6 @@ import React from 'react';
 import { useParams } from 'next/navigation';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/db';
-import { Container, Typography, Box, Paper, Chip, Stack, CircularProgress } from '@mui/material';
 
 const ExerciseDetail: React.FC = () => {
   const params = useParams();
@@ -16,73 +15,57 @@ const ExerciseDetail: React.FC = () => {
 
   if (!exercise) {
     return (
-      <Container sx={{ textAlign: 'center', mt: 4 }}>
-        <CircularProgress />
-        <Typography>جاري تحميل تفاصيل التمرين...</Typography>
-      </Container>
+      <div className="bg-brand-dark text-white min-h-screen flex justify-center items-center">
+        <p>جاري تحميل تفاصيل التمرين...</p>
+      </div>
     );
   }
 
   return (
-    <Container maxWidth="md">
-      <Paper sx={{ p: 3, mt: 2 }}>
+    <div className="bg-brand-dark text-white min-h-screen p-4">
+      <div className="max-w-2xl mx-auto">
         {exercise.image && (
-          <Box
-            component="img"
+          <img
             src={exercise.image}
             alt={exercise.name}
-            sx={{
-              width: '100%',
-              height: 'auto',
-              maxHeight: 300,
-              objectFit: 'cover',
-              borderRadius: 1,
-              mb: 3,
-            }}
+            className="w-full h-auto max-h-60 object-cover rounded-lg mb-4"
           />
         )}
-        <Typography variant="h4" component="h1" gutterBottom>
-          {exercise.name}
-        </Typography>
+        <h1 className="text-3xl font-bold mb-2">{exercise.name}</h1>
+        <div className="flex gap-2 mb-4">
+            <span className="text-sm px-3 py-1 bg-brand-green-accent text-brand-dark rounded-full font-semibold">{exercise.category}</span>
+        </div>
 
-        <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
-            <Chip label={exercise.category} color="primary" />
-        </Stack>
-
-        <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
-          العضلات الأساسية
-        </Typography>
-        <Stack direction="row" spacing={1}>
-            {exercise.primaryMuscles.map(muscle => (
-                <Chip key={muscle} label={muscle} />
-            ))}
-        </Stack>
+        <div className="mt-6">
+            <h2 className="text-xl font-bold mb-2">العضلات الأساسية</h2>
+            <div className="flex flex-wrap gap-2">
+                {exercise.primaryMuscles.map(muscle => (
+                    <span key={muscle} className="text-sm px-3 py-1 bg-brand-green-medium rounded-full">{muscle}</span>
+                ))}
+            </div>
+        </div>
 
         {exercise.secondaryMuscles && exercise.secondaryMuscles.length > 0 && (
-            <>
-                <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
-                    العضلات الثانوية
-                </Typography>
-                <Stack direction="row" spacing={1}>
+            <div className="mt-4">
+                <h2 className="text-xl font-bold mb-2">العضلات الثانوية</h2>
+                <div className="flex flex-wrap gap-2">
                     {exercise.secondaryMuscles.map(muscle => (
-                        <Chip key={muscle} label={muscle} variant="outlined" />
+                        <span key={muscle} className="text-sm px-3 py-1 bg-brand-green-light text-brand-dark rounded-full">{muscle}</span>
                     ))}
-                </Stack>
-            </>
+                </div>
+            </div>
         )}
 
         {exercise.instructions && (
-             <>
-                <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
-                    التعليمات
-                </Typography>
-                <Typography sx={{ whiteSpace: 'pre-wrap' }}>
+             <div className="mt-6">
+                <h2 className="text-xl font-bold mb-2">التعليمات</h2>
+                <p className="text-brand-green-text whitespace-pre-wrap leading-relaxed">
                     {exercise.instructions}
-                </Typography>
-            </>
+                </p>
+            </div>
         )}
-      </Paper>
-    </Container>
+      </div>
+    </div>
   );
 };
 
